@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Bundle -->
+    <key>CFBundleDisplayName</key>
+    <string>Goodfriend</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.yourcompany.goodfriend</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+
+    <!-- URL scheme for deep links -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>goodfriend</string>
+            </array>
+        </dict>
+    </array>
+
+    <!-- Privacy strings (required for App Store review) -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Goodfriend uses the microphone to record voice notes about your contacts.</string>
+
+    <key>NSContactsUsageDescription</key>
+    <string>Goodfriend can import contacts from your iPhone address book. We only import contacts you explicitly select.</string>
+
+    <key>NSCameraUsageDescription</key>
+    <string>Goodfriend can use your camera to add a photo for a contact.</string>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Goodfriend can use a photo from your library as a contact photo.</string>
+
+    <!-- Sign in with Apple -->
+    <key>com.apple.developer.applesignin</key>
+    <array>
+        <string>Default</string>
+    </array>
+
+    <!-- Background modes for push notifications -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
+
+    <!-- App Transport Security -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+    </dict>
+
+    <!-- Supported interface orientations -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+</dict>
+</plist>

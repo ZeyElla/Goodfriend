@@ -1,0 +1,12 @@
+-- Edge function placeholder for reminder push notifications
+-- The actual Edge Function code lives in supabase/functions/send-reminder/index.ts
+-- This migration creates a cron job that calls it every minute to check for due reminders.
+
+-- Enable pg_cron extension (available in Supabase Pro; on free tier call via external cron)
+-- select cron.schedule('fire-reminders', '* * * * *', $$
+--   select net.http_post(
+--     url := 'https://<your-project-ref>.supabase.co/functions/v1/send-reminder',
+--     headers := '{"Authorization": "Bearer <service_role_key>", "Content-Type": "application/json"}'::jsonb,
+--     body := '{}'::jsonb
+--   );
+-- $$);
