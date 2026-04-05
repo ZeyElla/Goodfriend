@@ -1,13 +1,11 @@
 import Foundation
 import UserNotifications
-import Supabase
 
 @MainActor
 final class NotificationService: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationService()
 
     private let center = UNUserNotificationCenter.current()
-    private var db: SupabaseClient { SupabaseService.shared.client }
 
     private override init() {
         super.init()
@@ -15,7 +13,7 @@ final class NotificationService: NSObject, ObservableObject, UNUserNotificationC
     }
 
     // ─────────────────────────────────────────
-    // Permission + token registration
+    // Permission
     // ─────────────────────────────────────────
 
     func requestPermission() async -> Bool {
@@ -26,21 +24,37 @@ final class NotificationService: NSObject, ObservableObject, UNUserNotificationC
         }
     }
 
-    /// Call this from your AppDelegate/scene callback after APNs registers.
-    func registerDeviceToken(_ tokenData: Data, userId: UUID) async {
-        let token = tokenData.map { String(format: "%02x", $0) }.joined()
+    // ─────────────────────────────────────────
+    // Local notification scheduling
+    // ─────────────────────────────────────────
 
-        struct TokenRow: Encodable {
-            let user_id: String
-            let token: String
-            let platform: String
-        }
+    func schedule(_ reminder: Reminder, contactName: String) {
+        let content = UNMutableNotificationContent()
+        content.title = reminder.title
+        content.body = contactName.isEmpty ? "" : "About \(contactName)"
+        content.sound = .default
+        content.userInfo = ["reminderId": reminder.id.uuidString]
 
-        try? await db
-            .from("device_tokens")
-            .upsert(TokenRow(user_id: userId.uuidString, token: token, platform: "ios"),
-                    onConflict: "token")
-            .execute()
+        let triggerDate = Calendar.current.dateComponents(
+            [.year, .month, .day, .hour, .minute],
+            from: reminder.dueDate
+        )
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: reminder.id.uuidString,
+            content: content,
+            trigger: trigger
+        )
+
+        center.add(request)
+    }
+
+    func cancel(_ reminderId: UUID) {
+        center.removePendingNotificationRequests(withIdentifiers: [reminderId.uuidString])
+    }
+
+    func cancelAll() {
+        center.removeAllPendingNotificationRequests()
     }
 
     // ─────────────────────────────────────────

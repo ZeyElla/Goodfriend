@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RemindersView: View {
     @StateObject private var repo = RemindersRepository.shared
+    @StateObject private var deepLinkHandler = DeepLinkHandler.shared
     @State private var selectedReminder: Reminder?
 
     var body: some View {
@@ -39,6 +40,11 @@ struct RemindersView: View {
             ReminderDetailView(reminder: reminder)
         }
         .task { try? await repo.fetchUpcoming() }
+        .onChange(of: deepLinkHandler.pendingReminderId) { _, id in
+            guard let id else { return }
+            selectedReminder = repo.reminders.first { $0.id.uuidString == id }
+            deepLinkHandler.pendingReminderId = nil
+        }
     }
 }
 

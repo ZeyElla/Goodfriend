@@ -11,8 +11,7 @@ struct VoiceCaptureResult {
 // MARK: – VoiceCaptureButton
 
 /// Floating mic button. When `contact` is non-nil the extracted data is saved to that contact.
-/// When `contact` is nil (from contacts list) the user must confirm which contact first — for now
-/// we show a contact picker (stubbed here, wire up ContactsRepository.shared.contacts).
+/// When `contact` is nil (from contacts list) a contact picker is shown first.
 
 struct VoiceCaptureButton: View {
     var contact: Contact?
@@ -23,6 +22,9 @@ struct VoiceCaptureButton: View {
     @State private var isProcessing = false
     @State private var errorMessage: String?
     @State private var showContactPicker = false
+    @State private var pickedContact: Contact?
+
+    var activeContact: Contact? { contact ?? pickedContact }
 
     var body: some View {
         ZStack {
@@ -55,6 +57,13 @@ struct VoiceCaptureButton: View {
             }
             .disabled(isProcessing)
         }
+        .sheet(isPresented: $showContactPicker) {
+            ContactPickerSheet { selected in
+                pickedContact = selected
+                showContactPicker = false
+                startRecording()
+            }
+        }
         .alert("Error", isPresented: .constant(errorMessage != nil)) {
             Button("OK") { errorMessage = nil }
         } message: {
@@ -68,7 +77,7 @@ struct VoiceCaptureButton: View {
         if captureService.isRecording {
             stopAndProcess()
         } else {
-            if contact == nil {
+            if activeContact == nil {
                 showContactPicker = true
             } else {
                 startRecording()
@@ -88,17 +97,13 @@ struct VoiceCaptureButton: View {
 
     private func stopAndProcess() {
         guard let audioURL = captureService.stopRecording() else { return }
-        guard let contact else { return }
+        guard let contact = activeContact else { return }
         guard let userId = authService.currentUserId else { return }
 
         isProcessing = true
         Task {
             do {
-                // 1. Transcribe via Whisper
-                let transcript = try await OpenAIService.shared.transcribe(audioURL: audioURL)
-
-                // 2. Extract via Claude
-                let extraction = try await ClaudeService.shared.extractFromTranscript(transcript, contact: contact)
+                let extraction = try await AIService.shared.transcribeAndExtract(audioURL: audioURL, contact: contact)
 
                 // 3. Persist bullet points
                 let bullets = extraction.bulletPoints.map {
@@ -127,6 +132,42 @@ struct VoiceCaptureButton: View {
                 errorMessage = error.localizedDescription
             }
             isProcessing = false
+        }
+    }
+}
+
+// MARK: – Contact picker sheet
+
+private struct ContactPickerSheet: View {
+    let onSelect: (Contact) -> Void
+
+    @StateObject private var repo = ContactsRepository.shared
+    @State private var searchText = ""
+    @Environment(\.dismiss) private var dismiss
+
+    var filtered: [Contact] {
+        guard !searchText.isEmpty else { return repo.contacts }
+        return repo.contacts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List(filtered) { contact in
+                Button {
+                    onSelect(contact)
+                } label: {
+                    ContactRowView(contact: contact)
+                }
+                .tint(.primary)
+            }
+            .searchable(text: $searchText, prompt: "Search contacts")
+            .navigationTitle("Who is this about?")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
         }
     }
 }

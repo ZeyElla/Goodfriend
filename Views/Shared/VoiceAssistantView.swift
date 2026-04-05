@@ -115,12 +115,12 @@ struct VoiceAssistantView: View {
 
         Task {
             do {
-                let query = try await OpenAIService.shared.transcribe(audioURL: audioURL)
+                let query = try await AIService.shared.transcribe(audioURL: audioURL)
                 transcript = query
                 try? FileManager.default.removeItem(at: audioURL)
 
                 phase = .thinking
-                let answer = try await ClaudeService.shared.assistantQuery(query, contacts: repo.contacts)
+                let answer = try await AIService.shared.assistantQuery(query, contacts: repo.contacts)
                 response = answer
 
                 phase = .speaking
