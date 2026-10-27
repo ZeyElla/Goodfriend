@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>goodfriend — sheet</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>goodfriend</h1>
+    <div id="account" class="account hidden">
+      <span id="account-email"></span>
+      <button id="signout" class="link-btn">Sign out</button>
+    </div>
+  </header>
+
+  <!-- Login -->
+  <main id="login" class="login hidden">
+    <div class="card">
+      <h2>Sign in</h2>
+      <p class="muted">Enter your email and we'll send you a one-time sign-in link.</p>
+      <form id="login-form">
+        <input id="email" type="email" placeholder="you@example.com" required />
+        <button type="submit">Send link</button>
+      </form>
+      <p id="login-status" class="status"></p>
+    </div>
+  </main>
+
+  <!-- Dashboard -->
+  <main id="dashboard" class="dashboard hidden">
+    <nav class="tabs">
+      <button class="tab active" data-tab="people">People</button>
+      <button class="tab" data-tab="reminders">Upcoming reminders</button>
+      <button id="refresh" class="link-btn refresh">↻ Refresh</button>
+    </nav>
+
+    <section id="tab-people" class="tab-panel">
+      <div id="people-grid" class="grid-wrap"></div>
+    </section>
+
+    <section id="tab-reminders" class="tab-panel hidden">
+      <div id="reminders-grid" class="grid-wrap"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>

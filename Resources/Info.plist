@@ -3,10 +3,16 @@
 <plist version="1.0">
 <dict>
     <!-- Bundle -->
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleDisplayName</key>
     <string>Goodfriend</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.yourcompany.goodfriend</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>CFBundleShortVersionString</key>
@@ -51,6 +57,10 @@
         <key>NSAllowsArbitraryLoads</key>
         <false/>
     </dict>
+
+    <!-- Launch screen (required so the app renders full-screen) -->
+    <key>UILaunchScreen</key>
+    <dict/>
 
     <!-- Supported interface orientations -->
     <key>UISupportedInterfaceOrientations</key>

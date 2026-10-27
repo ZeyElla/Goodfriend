@@ -1,5 +1,7 @@
-import MessageUI
 import SwiftUI
+#if os(iOS)
+import MessageUI
+#endif
 
 struct ReminderDetailView: View {
     let reminder: Reminder
@@ -63,6 +65,7 @@ struct ReminderDetailView: View {
                         .buttonStyle(.bordered)
                         .tint(.accent)
 
+                        #if os(iOS)
                         if MFMessageComposeViewController.canSendText(),
                            let phone = reminder.contact?.phone {
                             Button {
@@ -74,6 +77,7 @@ struct ReminderDetailView: View {
                             .buttonStyle(.borderedProminent)
                             .tint(.green)
                         }
+                        #endif
                     }
                     .padding(.horizontal)
                 }
@@ -89,6 +93,7 @@ struct ReminderDetailView: View {
         }
     }
 
+    #if os(iOS)
     private func openMessages(phone: String) {
         // Deep-link to Messages with the contact's phone pre-filled.
         // Note: sms:// only pre-fills the recipient; the body must be pasted by the user.
@@ -98,4 +103,5 @@ struct ReminderDetailView: View {
             UIApplication.shared.open(url)
         }
     }
+    #endif
 }
