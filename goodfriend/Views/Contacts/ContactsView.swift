@@ -7,7 +7,9 @@ struct ContactsView: View {
     @State private var searchText = ""
     @State private var showAddContact = false
     @State private var showImport = false
-    @State private var showTalk = false
+    // Talk-it-through screen temporarily disabled — its dictation currently
+    // behaves like plain voice-to-text. Re-enable TalkView when it adds more.
+    // @State private var showTalk = false
     @State private var selectedContact: Contact?
     @State private var graphSelection: Contact?
     @State private var viewMode: ViewMode = .cloud
@@ -83,19 +85,20 @@ struct ContactsView: View {
                     }
                 }
 
-                // Floating talk-it-through button
-                Button {
-                    showTalk = true
-                } label: {
-                    Image(systemName: "mic.fill")
-                        .font(.system(size: 22))
-                        .foregroundStyle(.white)
-                        .frame(width: 56, height: 56)
-                        .background(Color.accent)
-                        .clipShape(SwiftUI.Circle())
-                        .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
-                }
-                .padding(20)
+                // Floating talk-it-through button — temporarily disabled.
+                // Re-enable alongside TalkView() and the showTalk state/sheet.
+                // Button {
+                //     showTalk = true
+                // } label: {
+                //     Image(systemName: "mic.fill")
+                //         .font(.system(size: 22))
+                //         .foregroundStyle(.white)
+                //         .frame(width: 56, height: 56)
+                //         .background(Color.accent)
+                //         .clipShape(SwiftUI.Circle())
+                //         .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
+                // }
+                // .padding(20)
             }
         }
         .sheet(isPresented: $showAddContact) {
@@ -104,9 +107,9 @@ struct ContactsView: View {
         .sheet(isPresented: $showImport) {
             ContactImportView()
         }
-        .sheet(isPresented: $showTalk) {
-            TalkView()
-        }
+        // .sheet(isPresented: $showTalk) {
+        //     TalkView()
+        // }
         .task { try? await repo.fetchAll() }
     }
 }
